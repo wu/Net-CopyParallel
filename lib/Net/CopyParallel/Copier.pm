@@ -90,7 +90,7 @@ sub copy_step {
 
     my $num_has_source = $status->{has_source} ? scalar keys %{ $status->{has_source} } : 0;
     unless ( $num_has_source ) {
-        die( "ERROR: no source" );
+        $self->logger->logdie( "ERROR: no source" );
     }
     my $total_servers = scalar @{ $self->servers };
     $status->{remaining} = $total_servers - $num_has_source;

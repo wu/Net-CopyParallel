@@ -119,7 +119,7 @@ sub get_results {
             chomp $line;
             push @output, $line;
         }
-        close $fh or die "Error closing file: $!\n";
+        close $fh or $self->logger->logdie("Error closing file: $!");
     }
 
     close $self->system_command->stdin();
