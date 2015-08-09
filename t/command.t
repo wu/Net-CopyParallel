@@ -10,6 +10,9 @@ use YAML;
 use Net::CopyParallel::Command;
 use Net::CopyParallel::Logger;
 
+my $log4perl = Net::CopyParallel::Logger->new();
+$log4perl->init( 'INFO' );
+
 test "run a command that succeeds" => sub {
     my ($self) = @_;
 

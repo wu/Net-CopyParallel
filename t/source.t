@@ -11,6 +11,9 @@ use Test::Routine::Util;
 use Net::CopyParallel::Logger;
 use Net::CopyParallel::Source;
 
+my $log4perl = Net::CopyParallel::Logger->new();
+$log4perl->init( 'INFO' );
+
 has source => (
     is   => 'ro',
     lazy => 1,

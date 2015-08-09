@@ -12,6 +12,9 @@ use Net::CopyParallel::Queue;
 use Net::CopyParallel::Server;
 use Net::CopyParallel::Xfer;
 
+my $log4perl = Net::CopyParallel::Logger->new();
+$log4perl->init( 'INFO' );
+
 has queue => (
     is   => 'ro',
     lazy => 1,

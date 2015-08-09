@@ -10,6 +10,9 @@ use Test::Routine::Util;
 use Net::CopyParallel::Logger;
 use Net::CopyParallel::Server;
 
+my $log4perl = Net::CopyParallel::Logger->new();
+$log4perl->init( 'INFO' );
+
 has server => (
     is   => 'ro',
     lazy => 1,

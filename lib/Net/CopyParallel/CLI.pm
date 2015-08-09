@@ -3,6 +3,7 @@ package Net::CopyParallel::CLI;
 use Moo;
 use namespace::clean;
 
+use Net::CopyParallel::Logger;
 use Net::CopyParallel::Server;
 use Net::CopyParallel::Orchestrator;
 use Net::CopyParallel::Queue;
@@ -36,6 +37,9 @@ has 'logger'  => (
 
 sub run {
     my ( $self ) = @_;
+
+    # lazy load options first, to initialize logging
+    $self->options;
 
     my @servers;
     push @servers, Net::CopyParallel::Server->new( {
@@ -81,6 +85,10 @@ sub parse_command_line_options {
         ) ) {
         $self->logger->logdie( "ERROR: unable to parse command line options!" );
     }
+
+    my $log4perl = Net::CopyParallel::Logger->new();
+    my $loglevel = $options->{debug} ? 'DEBUG' : $options->{verbose} ? 'INFO' : 'WARN';
+    $log4perl->init( $loglevel );
 
     unless ( $options->{hosts} ) {
         $self->logger->logdie( "ERROR: host not specified, use -hosts" );
