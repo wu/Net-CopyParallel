@@ -41,7 +41,7 @@ sub run {
     push @servers, Net::CopyParallel::Server->new( {
         hostname   => 'localhost',
         available  => 1,
-        sourceable => 1,
+        has_source => 1,
         started    => 1,
     } );
     for my $host ( split /,/, $self->options->{hosts} ) {

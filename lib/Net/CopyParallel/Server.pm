@@ -14,7 +14,7 @@ has hostname => (
     required => 1,
 );
 
-has sourceable => (
+has has_source => (
     is => 'rw'
 );
 
@@ -49,21 +49,10 @@ has 'maxprocs' => (
     default => 2,
 );
 
-# this should probably be named 'has_source' or 'is_source'
-sub is_sourceable {
-    my ( $self ) = @_;
-
-    if ( $self->sourceable ) {
-        return 1;
-    }
-
-    return 0;
-}
-
 sub is_available {
     my ( $self ) = @_;
 
-    return unless $self->is_sourceable;
+    return unless $self->has_source;
 
     if ( $self->count_active_xfers() < $self->maxprocs ) {
         return 1;
@@ -98,7 +87,7 @@ sub finished_send {
 sub finished_receive {
     my ( $self, $source_server ) = @_;
 
-    $self->sourceable(1);
+    $self->has_source(1);
 }
 
 

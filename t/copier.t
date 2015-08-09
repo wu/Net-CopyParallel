@@ -51,7 +51,7 @@ has servers => (
         my $self = shift;
 
         my $localhost = Net::CopyParallel::Server->new( { hostname => 'localhost',
-                                                         sourceable => 1,
+                                                         has_source => 1,
                                                          started => 1,
                                                          queue => $self->queue,
                                                      } );
@@ -94,7 +94,7 @@ test "copy one file to one target" => sub {
         is_deeply( $status_h,
                    {
                        available  => { localhost => 1 },
-                       sourceable => { localhost => 1 },
+                       has_source => { localhost => 1 },
                        remaining  => 1,
                        started    => { localhost => 'testhost1' },
                        unstarted  => { 'testhost1' => 1 },
@@ -111,7 +111,7 @@ test "copy one file to one target" => sub {
         is_deeply( $status_h,
                    {
                        available  => { localhost => 1, testhost1 => 1 },
-                       sourceable => { localhost => 1, testhost1 => 1 },
+                       has_source => { localhost => 1, testhost1 => 1 },
                        remaining  => 0,
                        ended      => 1,
                        unstarted  => {},
@@ -128,7 +128,7 @@ test "copy one file to 10 targets" => sub {
 
     my @servers;
     push @servers,  Net::CopyParallel::Server->new( { hostname => 'localhost',
-                                                     sourceable => 1,
+                                                     has_source => 1,
                                                      started => 1,
                                                      queue => $self->queue,
                                                  } );
@@ -145,7 +145,7 @@ test "copy one file to 10 targets" => sub {
         "Confirming that process ended"
     );
 
-    is( scalar keys %{ $status_h->{sourceable} },
+    is( scalar keys %{ $status_h->{has_source} },
         11,
         "Checking that all 11 hosts have the source"
     );
@@ -157,7 +157,7 @@ test "copy one file to 10 targets" => sub {
 
 };
 
-test "detect no sourceable server" => sub {
+test "detect no has_source server" => sub {
     my ($self) = @_;
 
     $self->reset_copier; # this test requires a fresh one
@@ -172,7 +172,7 @@ test "detect no sourceable server" => sub {
     throws_ok
         { $self->copier->copy_step }
         qr/no source/,
-        'detect when no server is sourceable';
+        'detect when no server is has_source';
 };
 
 run_me;

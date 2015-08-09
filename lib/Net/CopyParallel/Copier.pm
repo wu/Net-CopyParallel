@@ -77,8 +77,8 @@ sub copy_step {
     for my $server ( @{$self->servers} ) {
         $index->{ $server->{hostname} } = $server;
 
-        if ( $server->is_sourceable ) {
-            $status->{sourceable}->{$server->hostname} = 1;
+        if ( $server->has_source ) {
+            $status->{has_source}->{$server->hostname} = 1;
         }
         if ( $server->is_available ) {
             $status->{available}->{$server->hostname} = 1;
@@ -88,16 +88,16 @@ sub copy_step {
         }
     }
 
-    my $num_sourceable = $status->{sourceable} ? scalar keys %{ $status->{sourceable} } : 0;
-    unless ( $num_sourceable ) {
+    my $num_has_source = $status->{has_source} ? scalar keys %{ $status->{has_source} } : 0;
+    unless ( $num_has_source ) {
         die( "ERROR: no source" );
     }
     my $total_servers = scalar @{ $self->servers };
-    $status->{remaining} = $total_servers - $num_sourceable;
+    $status->{remaining} = $total_servers - $num_has_source;
 
     my $num_unstarted = scalar keys %{$status->{unstarted}};
     my $num_available = scalar keys %{$status->{available}};
-    $self->logger->info( "STATUS: remaining=$status->{remaining} unstarted=$num_unstarted available=$num_available sourceable=$num_sourceable" );
+    $self->logger->info( "STATUS: remaining=$status->{remaining} unstarted=$num_unstarted available=$num_available has_source=$num_has_source" );
 
     if ( $status->{remaining} == 0 ) {
         $self->logger->warn( "Job complete!" );
