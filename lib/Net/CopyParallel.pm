@@ -1,4 +1,4 @@
-package Net::CopyParallel::Copier;
+package Net::CopyParallel;
 
 use Moo;
 use namespace::clean;

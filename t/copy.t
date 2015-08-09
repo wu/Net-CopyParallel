@@ -10,7 +10,7 @@ use Test::Routine::Util;
 use YAML;
 
 use Net::CopyParallel::Logger;
-use Net::CopyParallel::Copier;
+use Net::CopyParallel;
 use Net::CopyParallel::Queue;
 use Net::CopyParallel::Server;
 use Net::CopyParallel::Source;
@@ -22,7 +22,7 @@ has copier => (
     default => sub {
         my $self = shift;
         $self->reset_queue;
-        return Net::CopyParallel::Copier->new( servers       => $self->servers,
+        return Net::CopyParallel->new( servers       => $self->servers,
                                                     source        => $self->source,
                                                     queue         => $self->queue,
                                                     command_tmpl  => 'echo foo',
@@ -71,13 +71,13 @@ has queue => (
 );
 
 
-test "create an instance of Net::CopyParallel::Copier" => sub {
+test "create an instance of Net::CopyParallel" => sub {
     my ($self) = @_;
 
     $self->reset_copier; # this test requires a fresh one
 
     ok( $self->copier,
-        "Checking that we created an instance of Net::CopyParallel::Copier"
+        "Checking that we created an instance of Net::CopyParallel"
     );
 };
 
