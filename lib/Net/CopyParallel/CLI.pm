@@ -49,11 +49,6 @@ sub run {
         push @servers, Net::CopyParallel::Server->new( { hostname => $host } );
     }
 
-    use YAML;
-    print "\n\n";
-    print YAML::Dump { servers => \@servers };
-    print "\n\n";
-
     my $source = Net::CopyParallel::Source->new( path => $self->options->{path} );;
 
     my $queue = Net::CopyParallel::Queue->new( );
