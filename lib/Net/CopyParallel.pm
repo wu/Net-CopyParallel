@@ -50,6 +50,10 @@ has 'logger'  => (
     },
 );
 
+has laststatus => (
+    is => 'rw',
+    default => '',
+);
 
 sub copy {
     my ( $self ) = @_;
@@ -83,6 +87,7 @@ sub copy_step {
 
     my $status;
     my $index;
+    my $num_active = 0;
 
     for my $server ( @{$self->servers} ) {
         $index->{ $server->{hostname} } = $server;
@@ -99,6 +104,8 @@ sub copy_step {
         if ( ! $server->started ) {
             $status->{unstarted}->{$server->hostname} = 1;
         }
+
+        $num_active += $server->count_active_xfers();
     }
 
     my $num_has_source = $status->{has_source} ? scalar keys %{ $status->{has_source} } : 0;
@@ -110,9 +117,22 @@ sub copy_step {
 
     my $num_unstarted = scalar keys %{$status->{unstarted}};
     my $num_available = scalar keys %{$status->{available}};
-    $self->logger->info(
-        "STATUS: remaining=$status->{remaining} unstarted=$num_unstarted available=$num_available has_source=$num_has_source"
-    );
+
+    my $status_msg = join( " ",
+                           " ...",
+                           "active=$num_active",
+                           "remaining=$status->{remaining}",
+                           "unstarted=$num_unstarted",
+                           "available=$num_available",
+                           "has_source=$num_has_source"
+                       );;
+    if ( $status_msg eq $self->laststatus ) {
+        $self->logger->info( $status_msg );
+    }
+    else {
+        $self->logger->warn( $status_msg );
+    }
+    $self->laststatus( $status_msg );
 
     if ( $status->{remaining} == 0 ) {
         $self->logger->warn( "Job complete!" );
