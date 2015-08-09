@@ -11,7 +11,7 @@ use Net::CopyParallel::Logger;
 use Net::CopyParallel::Server;
 
 my $log4perl = Net::CopyParallel::Logger->new();
-$log4perl->init( 'INFO' );
+$log4perl->init();
 
 has server => (
     is   => 'ro',

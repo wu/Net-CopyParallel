@@ -12,7 +12,7 @@ use Net::CopyParallel::Logger;
 use Net::CopyParallel::Source;
 
 my $log4perl = Net::CopyParallel::Logger->new();
-$log4perl->init( 'INFO' );
+$log4perl->init();
 
 has source => (
     is   => 'ro',
