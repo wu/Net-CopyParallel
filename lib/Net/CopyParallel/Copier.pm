@@ -1,4 +1,4 @@
-package Net::CopyParallel::Orchestrator;
+package Net::CopyParallel::Copier;
 
 use Moo;
 use namespace::clean;

@@ -10,19 +10,19 @@ use Test::Routine::Util;
 use YAML;
 
 use Net::CopyParallel::Logger;
-use Net::CopyParallel::Orchestrator;
+use Net::CopyParallel::Copier;
 use Net::CopyParallel::Queue;
 use Net::CopyParallel::Server;
 use Net::CopyParallel::Source;
 
-has orchestrator => (
+has copier => (
     is   => 'ro',
     lazy => 1,
-    clearer => 'reset_orchestrator',
+    clearer => 'reset_copier',
     default => sub {
         my $self = shift;
         $self->reset_queue;
-        return Net::CopyParallel::Orchestrator->new( servers       => $self->servers,
+        return Net::CopyParallel::Copier->new( servers       => $self->servers,
                                                     source        => $self->source,
                                                     queue         => $self->queue,
                                                     command_tmpl  => 'echo foo',
@@ -71,23 +71,23 @@ has queue => (
 );
 
 
-test "create an instance of Net::CopyParallel::Orchestrator" => sub {
+test "create an instance of Net::CopyParallel::Copier" => sub {
     my ($self) = @_;
 
-    $self->reset_orchestrator; # this test requires a fresh one
+    $self->reset_copier; # this test requires a fresh one
 
-    ok( $self->orchestrator,
-        "Checking that we created an instance of Net::CopyParallel::Orchestrator"
+    ok( $self->copier,
+        "Checking that we created an instance of Net::CopyParallel::Copier"
     );
 };
 
 test "copy one file to one target" => sub {
     my ($self) = @_;
 
-    $self->reset_orchestrator; # this test requires a fresh one
+    $self->reset_copier; # this test requires a fresh one
 
     {
-        ok( my $status_h = $self->orchestrator->copy_step,
+        ok( my $status_h = $self->copier->copy_step,
             "Stepping one iteration into the copy"
         );
 
@@ -104,7 +104,7 @@ test "copy one file to one target" => sub {
     }
 
     {
-        ok( my $status_h = $self->orchestrator->copy(),
+        ok( my $status_h = $self->copier->copy(),
             "Running copy to completion"
         );
 
@@ -124,7 +124,7 @@ test "copy one file to one target" => sub {
 test "copy one file to 10 targets" => sub {
     my ($self) = @_;
 
-    $self->reset_orchestrator; # this test requires a fresh one
+    $self->reset_copier; # this test requires a fresh one
 
     my @servers;
     push @servers,  Net::CopyParallel::Server->new( { hostname => 'localhost',
@@ -139,7 +139,7 @@ test "copy one file to 10 targets" => sub {
 
     $self->servers( \@servers );
 
-    my $status_h = $self->orchestrator->copy();
+    my $status_h = $self->copier->copy();
 
     ok( $status_h->{ended},
         "Confirming that process ended"
@@ -160,7 +160,7 @@ test "copy one file to 10 targets" => sub {
 test "detect no sourceable server" => sub {
     my ($self) = @_;
 
-    $self->reset_orchestrator; # this test requires a fresh one
+    $self->reset_copier; # this test requires a fresh one
 
     my @servers;
     push @servers, Net::CopyParallel::Server->new( { hostname => "server1" } );
@@ -170,7 +170,7 @@ test "detect no sourceable server" => sub {
     $self->servers( \@servers );
 
     throws_ok
-        { $self->orchestrator->copy_step }
+        { $self->copier->copy_step }
         qr/no source/,
         'detect when no server is sourceable';
 };
