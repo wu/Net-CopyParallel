@@ -122,6 +122,8 @@ sub get_results {
         close $fh or $self->logger->logdie("Error closing file: $!");
     }
 
+    #print YAML::Dump { output => \@output };
+
     close $self->system_command->stdin();
 
     $self->results( { pid => $self->system_command->pid(),

@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 
+use File::Temp qw/ :POSIX /;
 use Test::More;
 use Test::Routine;
 use Test::Routine::Util;
@@ -10,6 +11,7 @@ use YAML;
 use Net::CopyParallel::Logger;
 use Net::CopyParallel::Queue;
 use Net::CopyParallel::Server;
+use Net::CopyParallel::Source;
 use Net::CopyParallel::Xfer;
 
 my $log4perl = Net::CopyParallel::Logger->new();
@@ -33,9 +35,16 @@ has xfer => (
         my $self = shift;
         my $server1 = Net::CopyParallel::Server->new( { hostname => 'localhost', queue => $self } );
         my $server2 = Net::CopyParallel::Server->new( { hostname => 'foohost',   queue => $self } );
+
+        my ($fh, $file) = tmpnam();
+        print $fh "testing\n";
+        close $fh;
+        my $source  = Net::CopyParallel::Source->new( { path => $file } );
+
         my $xfer = Net::CopyParallel::Xfer->new( {
             source_server => $server1,
             target_server => $server2,
+            source        => $source,
             command_tmpl  => '/bin/true',
         });
 

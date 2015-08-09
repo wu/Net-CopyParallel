@@ -3,9 +3,9 @@ package Net::CopyParallel::CLI;
 use Moo;
 use namespace::clean;
 
+use Net::CopyParallel;
 use Net::CopyParallel::Logger;
 use Net::CopyParallel::Server;
-use Net::CopyParallel::Orchestrator;
 use Net::CopyParallel::Queue;
 use Net::CopyParallel::Source;
 
@@ -57,15 +57,16 @@ sub run {
 
     my $queue = Net::CopyParallel::Queue->new( );
 
-    $self->logger->info( "Creating a new orchestrator" );
-    my $orchestrator = Net::CopyParallel::Orchestrator->new( {
+    $self->logger->info( "Creating a new Net::CopyParallel object" );
+    my $copier = Net::CopyParallel->new( {
         servers => \@servers,
-        queue  => $queue,
-        source => $source,
+        queue   => $queue,
+        source  => $source,
+        cascade => $self->options->{cascade},
     } );
 
     $self->logger->info( "Copying..." );
-    $orchestrator->copy();
+    $copier->copy();
 
     $self->logger->info( "Finished copying..." );
 }
@@ -80,6 +81,8 @@ sub parse_command_line_options {
             $self->argv,
             '-v|verbose!' => \$options->{verbose},
             '-h|hosts:s'  => \$options->{hosts},
+            '-c|cascade!' => \$options->{cascade},
+            '-n|dryrun'   => \$options->{dryrun},
             '-p|path:s'   => \$options->{path},
             '-help|?'	  => \$options->{help},
         ) ) {

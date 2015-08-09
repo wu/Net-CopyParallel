@@ -15,7 +15,16 @@ has target_server => (
     required => 1,
 );
 
+has source => (
+    is => 'ro',
+    required => 1,
+);
+
 has queue_id => (
+    is => 'rw',
+);
+
+has dryrun => (
     is => 'rw',
 );
 
@@ -89,19 +98,35 @@ sub _build_command {
 
     my $src_hostname = $self->source_server->hostname;
     my $tgt_hostname = $self->target_server->hostname;
+    my $path = $self->source->path;
 
     my $commandline;
 
-    if ( $src_hostname eq "localhost" ) {
-        $commandline = [ "scp", "/tmp/foo", "$tgt_hostname:/tmp/foo.$tgt_hostname" ],
+    my @base = ( "scp" );
+    #my @base = ( "rsync", "-ravu", "-e", "ssh" );
+
+    if ( $src_hostname eq 'localhost' ) {
+        if ( $self->dryrun ) {
+            $commandline = [ 'ssh', $tgt_hostname, 'hostname' ];
+        }
+        else {
+            $commandline = [ @base, $path, "$tgt_hostname:$path" ];
+        }
     }
     else {
-        $commandline = ["ssh", "-A", "-x", "$src_hostname",
-                          "scp", "/tmp/foo.$src_hostname", "$tgt_hostname:/tmp/foo.$tgt_hostname"
-                    ],
+        if ( $self->dryrun ) {
+            $commandline = [ 'ssh', '-A', $src_hostname, 'ssh', $tgt_hostname, 'hostname' ];
+        }
+        else {
+            $commandline = ['ssh', '-A', '-x', $src_hostname,
+                            @base, $path, "$tgt_hostname:$path"
+                        ];
+        }
     }
 
-    my $command = Net::CopyParallel::Command->new( { command => $commandline } );
+    my $command = Net::CopyParallel::Command->new( { command => $commandline,
+                                                     dryrun  => 1,
+                                                 } );
     return $command;
 }
 

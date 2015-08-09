@@ -19,9 +19,17 @@ has servers => (
     required => 1,
 );
 
+has cascade => (
+    is => 'ro',
+);
+
 has queue => (
     is => 'ro',
     required => 1,
+);
+
+has dryrun => (
+    is => 'ro',
 );
 
 has 'maxiterations' => (
@@ -78,12 +86,15 @@ sub copy_step {
 
     for my $server ( @{$self->servers} ) {
         $index->{ $server->{hostname} } = $server;
+        my $hostname = $server->hostname;
 
+        if ( $hostname eq "localhost" || $self->cascade ) {
+            if ( $server->is_available ) {
+                $status->{available}->{$server->hostname} = 1;
+            }
+        }
         if ( $server->has_source ) {
             $status->{has_source}->{$server->hostname} = 1;
-        }
-        if ( $server->is_available ) {
-            $status->{available}->{$server->hostname} = 1;
         }
         if ( ! $server->started ) {
             $status->{unstarted}->{$server->hostname} = 1;
@@ -99,7 +110,9 @@ sub copy_step {
 
     my $num_unstarted = scalar keys %{$status->{unstarted}};
     my $num_available = scalar keys %{$status->{available}};
-    $self->logger->info( "STATUS: remaining=$status->{remaining} unstarted=$num_unstarted available=$num_available has_source=$num_has_source" );
+    $self->logger->info(
+        "STATUS: remaining=$status->{remaining} unstarted=$num_unstarted available=$num_available has_source=$num_has_source"
+    );
 
     if ( $status->{remaining} == 0 ) {
         $self->logger->warn( "Job complete!" );
@@ -120,6 +133,8 @@ sub copy_step {
                 my $xfer = Net::CopyParallel::Xfer->new(
                     source_server => $available_server,
                     target_server => $unstarted_server,
+                    source        => $self->source,
+                    dryrun        => $self->dryrun,
                 );
 
                 $self->queue->enqueue( $xfer );
