@@ -155,5 +155,59 @@ test "check if a command was finished" => sub {
     );
 };
 
+test "get_runtime_string" => sub {
+    my ( $self ) = @_;
+
+    is( Net::CopyParallel::Command->new(
+              { command => ['true'], starttime => 1439152134, endtime   => 1439152135 }
+            )->get_runtime_string(),
+        "1s",
+        "Checking runtime for 1 second"
+    );
+
+    is( Net::CopyParallel::Command->new(
+              { command => ['true'], starttime => 1439152000, endtime   => 1439152060 }
+            )->get_runtime_string(),
+        "1m",
+        "Checking runtime for 1 minute"
+    );
+
+    is( Net::CopyParallel::Command->new(
+              { command => ['true'], starttime => 1439152000, endtime   => 1439152061 }
+            )->get_runtime_string(),
+        "1m 1s",
+        "Checking runtime for 1 minute 1 second"
+    );
+
+    is( Net::CopyParallel::Command->new(
+              { command => ['true'], starttime => 1439150000, endtime   => 1439153600 }
+            )->get_runtime_string(),
+        "1h",
+        "Checking runtime for 1 hour"
+    );
+
+    is( Net::CopyParallel::Command->new(
+              { command => ['true'], starttime => 1439150000, endtime   => 1439153660 }
+            )->get_runtime_string(),
+        "1h 1m",
+        "Checking runtime for 1 hour 1 minute"
+    );
+
+    is( Net::CopyParallel::Command->new(
+              { command => ['true'], starttime => 1439150000, endtime   => 1439153661 }
+            )->get_runtime_string(),
+        "1h 1m 1s",
+        "Checking runtime for 1 hour 1 minute 1 second"
+    );
+
+    is( Net::CopyParallel::Command->new(
+              { command => ['true'], starttime => 1439152135, endtime   => 1439152135 }
+            )->get_runtime_string(),
+        "0s",
+        "Checking runtime for 0 seconds"
+    );
+
+};
+
 run_me;
 done_testing;

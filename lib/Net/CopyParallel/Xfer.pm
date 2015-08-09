@@ -76,7 +76,7 @@ sub check_status {
         $results->{target} = $self->target_server->hostname;
         $results->{status} = $results->{exit} == 0 ? "OK" : "FAILURE";
 
-        $self->logger->warn( "Transfer $results->{status}: $results->{source} => $results->{target}" );
+        $self->logger->warn( "Transfer $results->{status} in $results->{runtime}: $results->{source} => $results->{target}" );
 
         $self->logger->info( "xfer completed" );
         $self->source_server->finished_send( $self->target_server );
