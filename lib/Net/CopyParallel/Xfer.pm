@@ -115,7 +115,7 @@ sub _build_command {
     }
     else {
         if ( $self->dryrun ) {
-            $commandline = [ 'ssh', '-A', $src_hostname, 'ssh', $tgt_hostname, 'hostname' ];
+            $commandline = [ 'ssh', '-A', '-x', $src_hostname, 'ssh', $tgt_hostname, 'hostname' ];
         }
         else {
             $commandline = ['ssh', '-A', '-x', $src_hostname,
