@@ -80,6 +80,7 @@ sub parse_command_line_options {
         Getopt::Long::GetOptionsFromArray(
             $self->argv,
             '-v|verbose!' => \$options->{verbose},
+            '-d|debug!'   => \$options->{debug},
             '-h|hosts:s'  => \$options->{hosts},
             '-c|cascade!' => \$options->{cascade},
             '-n|dryrun'   => \$options->{dryrun},
@@ -90,7 +91,7 @@ sub parse_command_line_options {
     }
 
     my $log4perl = Net::CopyParallel::Logger->new();
-    my $loglevel = $options->{debug} ? 'DEBUG' : $options->{verbose} ? 'INFO' : 'WARN';
+    my $loglevel = $options->{debug} ? 'DEBUG' : $options->{verbose} ? 'INFO' : '';
     $log4perl->init( $loglevel );
 
     unless ( $options->{hosts} ) {
