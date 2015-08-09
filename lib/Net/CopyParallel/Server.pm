@@ -3,7 +3,6 @@ package Net::CopyParallel::Server;
 use Moo;
 use namespace::clean;
 
-use Net::CopyParallel::Logger;
 use Net::CopyParallel::Command;
 
 use Log::Log4perl;

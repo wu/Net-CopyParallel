@@ -8,6 +8,7 @@ use Test::More;
 use Test::Routine;
 use Test::Routine::Util;
 
+use Net::CopyParallel::Logger;
 use Net::CopyParallel::Source;
 
 has source => (

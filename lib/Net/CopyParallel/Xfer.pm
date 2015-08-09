@@ -3,6 +3,7 @@ package Net::CopyParallel::Xfer;
 use Moo;
 use namespace::clean;
 
+use Log::Log4perl;
 
 has source_server => (
     is => 'ro',

@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 
+use Net::CopyParallel::Logger;
 use Net::CopyParallel::CLI;
 
 my $cli = Net::CopyParallel::CLI->new( { argv => \@ARGV } );

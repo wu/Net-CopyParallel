@@ -7,6 +7,7 @@ use Test::Routine;
 use Test::Routine::Util;
 use YAML;
 
+use Net::CopyParallel::Logger;
 use Net::CopyParallel::Command;
 use Net::CopyParallel::Queue;
 use Net::CopyParallel::Server;

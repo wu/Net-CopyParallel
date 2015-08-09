@@ -5,6 +5,8 @@ use namespace::clean;
 
 use Net::CopyParallel::Xfer;
 
+use Log::Log4perl;
+
 has source => (
     is => 'ro',
     isa => sub { die "must be Net::CopyParallel::Source" unless ref $_[0] eq "Net::CopyParallel::Source" },

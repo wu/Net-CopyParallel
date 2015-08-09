@@ -3,7 +3,7 @@ package Net::CopyParallel::Queue;
 use Moo;
 use namespace::clean;
 
-use Net::CopyParallel::Logger;
+use Log::Log4perl;
 
 has queue => (
     is => 'ro',

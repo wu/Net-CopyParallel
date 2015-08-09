@@ -2,13 +2,13 @@
 use strict;
 use warnings;
 
-use Log::Log4perl;
 use Test::More;
 use Test::Routine;
 use Test::Routine::Util;
 use YAML;
 
 use Net::CopyParallel::Command;
+use Net::CopyParallel::Logger;
 
 test "run a command that succeeds" => sub {
     my ($self) = @_;

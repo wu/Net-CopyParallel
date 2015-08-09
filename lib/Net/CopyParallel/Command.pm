@@ -5,10 +5,10 @@ use namespace::clean;
 
 use Carp;
 use File::Temp qw/ :POSIX /;
+use Log::Log4perl;
 use POSIX ":sys_wait_h";
 use System::Command;
 
-use Net::CopyParallel::Logger;
 
 has command => (
     is => 'ro',
