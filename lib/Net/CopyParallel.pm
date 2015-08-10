@@ -169,8 +169,8 @@ sub copy_step {
     # check if there are any available hosts, and also any unstarted hosts
     if ( $num_available && $num_unstarted ) {
         # give one unstarted host to each available host
-        my @unstarted = sort keys %{ $status->{unstarted} };
-        for my $available ( sort keys %{ $status->{available} } ) {
+        my @unstarted = reverse sort keys %{ $status->{unstarted} };
+        for my $available ( reverse sort keys %{ $status->{available} } ) {
             my $available_server = $index->{ $available };
             if ( scalar @unstarted ) {
                 my $unstarted = pop @unstarted;
