@@ -21,6 +21,11 @@ has source => (
     required => 1,
 );
 
+has eventlog => (
+    is => 'ro',
+    required => 1,
+);
+
 has queue_id => (
     is => 'rw',
 );
@@ -77,7 +82,7 @@ sub check_status {
         $results->{target} = $self->target_server->hostname;
         $results->{status} = $results->{exit} == 0 ? "OK" : "FAILURE";
 
-        $self->logger->warn( "Transfer $results->{status} in $results->{runtime}: $results->{source} => $results->{target}" );
+        $self->logger->warn( "Transfer $results->{status} in $results->{elapsed}: $results->{source} => $results->{target}" );
 
         $self->logger->info( "xfer completed" );
         $self->source_server->finished_send( $self->target_server );
@@ -89,6 +94,8 @@ sub check_status {
         else {
             $self->target_server->finished_receive;
         }
+
+        $self->eventlog->log_event( $results );
     }
 
     return $results;

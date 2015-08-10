@@ -9,6 +9,7 @@ use Test::Routine::Util;
 use YAML;
 
 use Net::CopyParallel::Logger;
+use Net::CopyParallel::EventLog;
 use Net::CopyParallel::Queue;
 use Net::CopyParallel::Server;
 use Net::CopyParallel::Source;
@@ -36,6 +37,8 @@ has xfer => (
         my $server1 = Net::CopyParallel::Server->new( { hostname => 'localhost', queue => $self } );
         my $server2 = Net::CopyParallel::Server->new( { hostname => 'foohost',   queue => $self } );
 
+        my $eventlog      = Net::CopyParallel::EventLog->new();
+
         my ($fh, $file) = tmpnam();
         print $fh "testing\n";
         close $fh;
@@ -46,6 +49,7 @@ has xfer => (
             target_server => $server2,
             source        => $source,
             command_tmpl  => '/bin/true',
+            eventlog      => $eventlog,
         });
 
         return $xfer;

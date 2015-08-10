@@ -10,6 +10,7 @@ use YAML;
 
 use Net::CopyParallel::Logger;
 use Net::CopyParallel::Command;
+use Net::CopyParallel::EventLog;
 use Net::CopyParallel::Queue;
 use Net::CopyParallel::Server;
 use Net::CopyParallel::Source;
@@ -27,6 +28,8 @@ has xfer => (
         my $source_server = Net::CopyParallel::Server->new( {hostname => 'localhost', queue => $queue} );
         my $target_server = Net::CopyParallel::Server->new( {hostname => 'foohost',   queue => $queue} );
 
+        my $eventlog      = Net::CopyParallel::EventLog->new();
+
         my ($fh, $file) = tmpnam();
         print $fh "testing\n";
         close $fh;
@@ -36,6 +39,7 @@ has xfer => (
                                                target_server => $target_server,
                                                command       => Net::CopyParallel::Command->new( { command => ["/bin/true"] } ),
                                                source        => $source,
+                                               eventlog      => $eventlog,
                                           });
     },
 );
@@ -70,7 +74,8 @@ test "starting an xfer marks all items as 'running'" => sub {
 test "build commands" => sub {
     my ( $self ) = @_;
 
-    my $queue  = Net::CopyParallel::Queue->new();
+    my $queue    = Net::CopyParallel::Queue->new();
+    my $eventlog = Net::CopyParallel::EventLog->new();
 
     my ($fh, $file) = tmpnam();
     my $source = Net::CopyParallel::Source->new( { path => $file } );
@@ -78,7 +83,8 @@ test "build commands" => sub {
     is_deeply( Net::CopyParallel::Xfer->new(
                    { source_server => Net::CopyParallel::Server->new( {hostname => 'localhost', queue => $queue} ),
                      target_server => Net::CopyParallel::Server->new( {hostname => 'foohost',   queue => $queue} ),
-                     source        => $source, } )->_build_command()->command,
+                     source        => $source,
+                     eventlog      => $eventlog } )->_build_command()->command,
                [ "scp", $file, "foohost:$file" ],
                "Checking build_command for simple scp from localhost to foohost"
            );
@@ -87,6 +93,7 @@ test "build commands" => sub {
                    { source_server => Net::CopyParallel::Server->new( {hostname => 'localhost', queue => $queue} ),
                      target_server => Net::CopyParallel::Server->new( {hostname => 'foohost',   queue => $queue} ),
                      source        => $source,
+                     eventlog      => $eventlog,
                      dryrun        => 1 } )->_build_command()->command,
                [ "ssh", "foohost", "hostname" ],
                "Checking build_command for dryrun from localhost"
@@ -95,6 +102,7 @@ test "build commands" => sub {
     is_deeply( Net::CopyParallel::Xfer->new(
                    { source_server => Net::CopyParallel::Server->new( {hostname => 'foohost', queue => $queue} ),
                      target_server => Net::CopyParallel::Server->new( {hostname => 'barhost', queue => $queue} ),
+                     eventlog      => $eventlog,
                      source        => $source, } )->_build_command()->command,
                [ "ssh", '-A', '-x', 'foohost', "scp", $file, "barhost:$file" ],
                "Checking build_command for scp initiated from remote host"
@@ -104,6 +112,7 @@ test "build commands" => sub {
                    { source_server => Net::CopyParallel::Server->new( {hostname => 'foohost', queue => $queue} ),
                      target_server => Net::CopyParallel::Server->new( {hostname => 'barhost', queue => $queue} ),
                      source        => $source,
+                     eventlog      => $eventlog,
                      dryrun        => 1 } )->_build_command()->command,
                [ "ssh", '-A', '-x', 'foohost', "ssh", 'barhost', "hostname" ],
                "Checking build_command for dryrun from remote host"

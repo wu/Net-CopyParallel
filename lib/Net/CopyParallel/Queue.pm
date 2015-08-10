@@ -25,7 +25,6 @@ has 'logger'  => (
 );
 
 
-
 sub enqueue {
     my ( $self, $command_obj ) = @_;
 

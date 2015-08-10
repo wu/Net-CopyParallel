@@ -7,6 +7,7 @@ use namespace::clean;
 # ABSTRACT: copy files to remote servers in multiple locations
 
 use Net::CopyParallel::Duration;
+use Net::CopyParallel::EventLog;
 use Net::CopyParallel::Xfer;
 
 use Log::Log4perl;
@@ -54,6 +55,14 @@ has duration => (
     }
 );
 
+has eventlog => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        return Net::CopyParallel::EventLog->new();
+    },
+);
+
 has 'logger'  => (
     is => 'ro',
     lazy => 1,
@@ -87,6 +96,8 @@ sub copy {
 
         if ( $results->{ended} ) {
             $self->logger->info( "Ending copy" );
+
+            print join( "\n", $self->eventlog->display_history() ), "\n";
             return $results;
         }
 
@@ -181,6 +192,7 @@ sub copy_step {
                     target_server => $unstarted_server,
                     source        => $self->source,
                     dryrun        => $self->dryrun,
+                    eventlog      => $self->eventlog,
                 );
 
                 $self->queue->enqueue( $xfer );

@@ -148,18 +148,21 @@ sub get_results {
 
     close $self->system_command->stdin();
 
-    my $runtime = $self->get_runtime_string();
+    my $runtime = time - $self->starttime;
 
-    $self->results( { pid     => $self->system_command->pid(),
-                      signal  => $self->system_command->signal(),
-                      exit    => $self->system_command->exit(),
-                      core    => $self->system_command->core(),
-                      command => $self->command,
-                      runtime => $runtime,
-                      output  => \@output,
+    $self->results( { pid       => $self->system_command->pid(),
+                      signal    => $self->system_command->signal(),
+                      exit      => $self->system_command->exit(),
+                      core      => $self->system_command->core(),
+                      command   => $self->command,
+                      elapsed   => $runtime,
+                      output    => \@output,
+                      starttime => $self->starttime,
+                      date      => scalar localtime $self->starttime,
                   } );
 
-    $self->logger->info( "Command completed in $runtime ",  );
+    my $runtime_string = $self->get_runtime_string( $runtime );
+    $self->logger->info( "Command completed in $runtime_string" );
 
     return $self->results;
 
