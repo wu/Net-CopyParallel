@@ -1,7 +1,8 @@
 package Net::CopyParallel::Queue;
-
 use Moo;
 use namespace::clean;
+
+# VERSION
 
 use Log::Log4perl;
 

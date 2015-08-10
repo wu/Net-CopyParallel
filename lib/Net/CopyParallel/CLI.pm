@@ -1,7 +1,8 @@
 package Net::CopyParallel::CLI;
-
 use Moo;
 use namespace::clean;
+
+# VERSION
 
 use Net::CopyParallel;
 use Net::CopyParallel::Logger;

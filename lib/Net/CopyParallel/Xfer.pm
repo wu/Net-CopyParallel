@@ -1,7 +1,8 @@
 package Net::CopyParallel::Xfer;
-
 use Moo;
 use namespace::clean;
+
+# VERSION
 
 use Log::Log4perl;
 

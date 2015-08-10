@@ -1,7 +1,10 @@
 package Net::CopyParallel;
-
 use Moo;
 use namespace::clean;
+
+# VERSION
+
+# ABSTRACT: copy files to remote servers in multiple locations
 
 use Net::CopyParallel::Xfer;
 

@@ -1,7 +1,8 @@
 package Net::CopyParallel::Server;
-
 use Moo;
 use namespace::clean;
+
+# VERSION
 
 use Net::CopyParallel::Command;
 

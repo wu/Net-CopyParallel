@@ -1,7 +1,8 @@
 package Net::CopyParallel::Command;
-
 use Moo;
 use namespace::clean;
+
+# VERSION
 
 use Carp;
 use File::Temp qw/ :POSIX /;

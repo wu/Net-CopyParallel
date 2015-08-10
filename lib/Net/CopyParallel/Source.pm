@@ -1,7 +1,8 @@
 package Net::CopyParallel::Source;
-
 use Moo;
 use namespace::clean;
+
+# VERSION
 
 has path => (
     is => 'ro',
