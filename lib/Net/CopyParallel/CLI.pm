@@ -7,7 +7,6 @@ use namespace::clean;
 use Net::CopyParallel;
 use Net::CopyParallel::Logger;
 use Net::CopyParallel::Server;
-use Net::CopyParallel::Queue;
 use Net::CopyParallel::Source;
 
 use Getopt::Long;
@@ -56,12 +55,9 @@ sub run {
 
     my $source = Net::CopyParallel::Source->new( path => $self->options->{path} );;
 
-    my $queue = Net::CopyParallel::Queue->new( );
-
     $self->logger->info( "Creating a new Net::CopyParallel object" );
     my $copier = Net::CopyParallel->new( {
         servers => \@servers,
-        queue   => $queue,
         source  => $source,
         cascade => $self->options->{cascade},
     } );

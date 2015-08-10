@@ -9,6 +9,7 @@ use namespace::clean;
 use Net::CopyParallel::Duration;
 use Net::CopyParallel::EventLog;
 use Net::CopyParallel::Xfer;
+use Net::CopyParallel::Queue;
 
 use Log::Log4perl;
 
@@ -30,7 +31,10 @@ has cascade => (
 
 has queue => (
     is => 'ro',
-    required => 1,
+    lazy => 1,
+    default => sub {
+        return Net::CopyParallel::Queue->new();
+    }
 );
 
 has dryrun => (

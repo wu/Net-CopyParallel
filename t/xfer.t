@@ -11,7 +11,6 @@ use YAML;
 use Net::CopyParallel::Logger;
 use Net::CopyParallel::Command;
 use Net::CopyParallel::EventLog;
-use Net::CopyParallel::Queue;
 use Net::CopyParallel::Server;
 use Net::CopyParallel::Source;
 use Net::CopyParallel::Xfer;
@@ -24,9 +23,8 @@ has xfer => (
     lazy => 1,
     clearer => 'reset_xfer',
     default => sub {
-        my $queue  = Net::CopyParallel::Queue->new();
-        my $source_server = Net::CopyParallel::Server->new( {hostname => 'localhost', queue => $queue} );
-        my $target_server = Net::CopyParallel::Server->new( {hostname => 'foohost',   queue => $queue} );
+        my $source_server = Net::CopyParallel::Server->new( {hostname => 'localhost'} );
+        my $target_server = Net::CopyParallel::Server->new( {hostname => 'foohost'} );
 
         my $eventlog      = Net::CopyParallel::EventLog->new();
 
@@ -74,15 +72,14 @@ test "starting an xfer marks all items as 'running'" => sub {
 test "build commands" => sub {
     my ( $self ) = @_;
 
-    my $queue    = Net::CopyParallel::Queue->new();
     my $eventlog = Net::CopyParallel::EventLog->new();
 
     my ($fh, $file) = tmpnam();
     my $source = Net::CopyParallel::Source->new( { path => $file } );
 
     is_deeply( Net::CopyParallel::Xfer->new(
-                   { source_server => Net::CopyParallel::Server->new( {hostname => 'localhost', queue => $queue} ),
-                     target_server => Net::CopyParallel::Server->new( {hostname => 'foohost',   queue => $queue} ),
+                   { source_server => Net::CopyParallel::Server->new( {hostname => 'localhost'} ),
+                     target_server => Net::CopyParallel::Server->new( {hostname => 'foohost'} ),
                      source        => $source,
                      eventlog      => $eventlog } )->_build_command()->command,
                [ "scp", $file, "foohost:$file" ],
@@ -90,8 +87,8 @@ test "build commands" => sub {
            );
 
     is_deeply( Net::CopyParallel::Xfer->new(
-                   { source_server => Net::CopyParallel::Server->new( {hostname => 'localhost', queue => $queue} ),
-                     target_server => Net::CopyParallel::Server->new( {hostname => 'foohost',   queue => $queue} ),
+                   { source_server => Net::CopyParallel::Server->new( {hostname => 'localhost'} ),
+                     target_server => Net::CopyParallel::Server->new( {hostname => 'foohost'} ),
                      source        => $source,
                      eventlog      => $eventlog,
                      dryrun        => 1 } )->_build_command()->command,
@@ -100,8 +97,8 @@ test "build commands" => sub {
            );
 
     is_deeply( Net::CopyParallel::Xfer->new(
-                   { source_server => Net::CopyParallel::Server->new( {hostname => 'foohost', queue => $queue} ),
-                     target_server => Net::CopyParallel::Server->new( {hostname => 'barhost', queue => $queue} ),
+                   { source_server => Net::CopyParallel::Server->new( {hostname => 'foohost'} ),
+                     target_server => Net::CopyParallel::Server->new( {hostname => 'barhost'} ),
                      eventlog      => $eventlog,
                      source        => $source, } )->_build_command()->command,
                [ "ssh", '-A', '-x', 'foohost', "scp", $file, "barhost:$file" ],
@@ -109,8 +106,8 @@ test "build commands" => sub {
            );
 
     is_deeply( Net::CopyParallel::Xfer->new(
-                   { source_server => Net::CopyParallel::Server->new( {hostname => 'foohost', queue => $queue} ),
-                     target_server => Net::CopyParallel::Server->new( {hostname => 'barhost', queue => $queue} ),
+                   { source_server => Net::CopyParallel::Server->new( {hostname => 'foohost'} ),
+                     target_server => Net::CopyParallel::Server->new( {hostname => 'barhost'} ),
                      source        => $source,
                      eventlog      => $eventlog,
                      dryrun        => 1 } )->_build_command()->command,

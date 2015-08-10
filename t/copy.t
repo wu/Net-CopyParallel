@@ -11,7 +11,6 @@ use YAML;
 
 use Net::CopyParallel::Logger;
 use Net::CopyParallel;
-use Net::CopyParallel::Queue;
 use Net::CopyParallel::Server;
 use Net::CopyParallel::Source;
 
@@ -24,10 +23,8 @@ has copier => (
     clearer => 'reset_copier',
     default => sub {
         my $self = shift;
-        $self->reset_queue;
         return Net::CopyParallel->new( servers       => $self->servers,
                                        source        => $self->source,
-                                       queue         => $self->queue,
                                        command_tmpl  => 'echo foo',
                                        maxiterations => 9,
                                        dryrun        => 1,
@@ -58,23 +55,12 @@ has servers => (
         my $localhost = Net::CopyParallel::Server->new( { hostname  => 'localhost',
                                                          has_source => 1,
                                                          started    => 1,
-                                                         queue      => $self->queue,
                                                      } );
-        my $server = Net::CopyParallel::Server->new( { hostname => 'testhost1', queue => $self->queue } );
+        my $server = Net::CopyParallel::Server->new( { hostname => 'testhost1' } );
 
         return [ $localhost, $server ]
     }
 );
-
-has queue => (
-    is => 'ro',
-    lazy => 1,
-    clearer => 'reset_queue',
-    default => sub {
-        return Net::CopyParallel::Queue->new();
-    }
-);
-
 
 test "create an instance of Net::CopyParallel" => sub {
     my ($self) = @_;
@@ -135,11 +121,10 @@ test "copy one file to 10 targets" => sub {
     push @servers,  Net::CopyParallel::Server->new( { hostname   => 'localhost',
                                                       has_source => 1,
                                                       started    => 1,
-                                                      queue      => $self->queue,
                                                   } );
 
     for my $idx ( 0 .. 9 ) {
-        push @servers, Net::CopyParallel::Server->new( { hostname => "testhost$idx", queue => $self->queue } );
+        push @servers, Net::CopyParallel::Server->new( { hostname => "testhost$idx" } );
     }
 
     $self->servers( \@servers );
