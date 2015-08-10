@@ -26,9 +26,9 @@ sub init {
         $level = 'WARN';
     }
 
-    my $conversion_pattern = '%d: %m %n';
+    my $conversion_pattern = '%m %n';
     if ( $level =~ m/INFO|DEBUG|TRACE/ ) {
-        $conversion_pattern = '%d %F{1}: %m %n';;
+        $conversion_pattern = '%d %F{1}: %m %n';
     }
 
     Log::Log4perl->init(\ <<"EOT");
