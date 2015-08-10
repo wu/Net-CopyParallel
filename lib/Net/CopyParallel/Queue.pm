@@ -16,7 +16,7 @@ has queue_idx => (
     default => 0,
 );
 
-has 'logger'  => (
+has logger  => (
     is => 'ro',
     lazy => 1,
     default => sub {

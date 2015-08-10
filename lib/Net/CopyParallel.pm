@@ -41,7 +41,7 @@ has dryrun => (
     is => 'ro',
 );
 
-has 'maxiterations' => (
+has maxiterations => (
     is => 'ro',
     default => 999999,
 );
@@ -67,7 +67,7 @@ has eventlog => (
     },
 );
 
-has 'logger'  => (
+has logger  => (
     is => 'ro',
     lazy => 1,
     default => sub {

@@ -44,7 +44,7 @@ has started => (
     is => 'rw'
 );
 
-has 'logger'  => (
+has logger  => (
     is => 'ro',
     lazy => 1,
     default => sub {

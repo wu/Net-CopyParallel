@@ -36,7 +36,7 @@ has transferring_to => (
     default => sub { return {} },
 );
 
-has 'logger'  => (
+has logger  => (
     is => 'ro',
     lazy => 1,
     default => sub {
@@ -44,7 +44,7 @@ has 'logger'  => (
     },
 );
 
-has 'maxprocs' => (
+has maxprocs => (
     is => 'ro',
     default => 2,
 );
