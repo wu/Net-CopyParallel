@@ -6,6 +6,7 @@ use namespace::clean;
 
 # ABSTRACT: copy files to remote servers in multiple locations
 
+use Net::CopyParallel::Duration;
 use Net::CopyParallel::Xfer;
 
 use Log::Log4perl;
@@ -45,6 +46,14 @@ has iterations => (
     default => 0,
 );
 
+has duration => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        return Net::CopyParallel::Duration->new();
+    }
+);
+
 has 'logger'  => (
     is => 'ro',
     lazy => 1,
@@ -56,6 +65,15 @@ has 'logger'  => (
 has laststatus => (
     is => 'rw',
     default => '',
+);
+has laststatus_time => (
+    is => 'rw',
+    default => 0,
+);
+
+has starttime => (
+    is => 'ro',
+    default => sub { return time },
 );
 
 sub copy {
@@ -121,24 +139,29 @@ sub copy_step {
     my $num_unstarted = scalar keys %{$status->{unstarted}};
     my $num_available = scalar keys %{$status->{available}};
 
+    my $now = time;
+    my $runtime = $self->duration->format( $now - $self->starttime );
+
     my $status_msg = join( " ",
-                           " ...",
                            "active=$num_active",
                            "remaining=$status->{remaining}",
                            "unstarted=$num_unstarted",
-                           "available=$num_available",
-                           "has_source=$num_has_source"
-                       );;
-    if ( $status_msg eq $self->laststatus ) {
+                           "available_hosts=$num_available",
+                           "source_hosts=$num_has_source",
+                       );
+
+    my $age = $now - $self->laststatus_time;
+    if ( $status_msg eq $self->laststatus && $age < 15 ) {
         $self->logger->info( $status_msg );
     }
     else {
-        $self->logger->warn( $status_msg );
+        $self->logger->warn( " ... [$runtime] " . $status_msg );
+        $self->laststatus_time( $now );
+        $self->laststatus( $status_msg );
     }
-    $self->laststatus( $status_msg );
 
     if ( $status->{remaining} == 0 ) {
-        $self->logger->warn( "Job complete!" );
+        $self->logger->warn( "Job complete in $runtime" );
         $status->{ended} = 1;
         return $status;
     }

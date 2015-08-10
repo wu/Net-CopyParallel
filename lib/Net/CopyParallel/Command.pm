@@ -4,6 +4,8 @@ use namespace::clean;
 
 # VERSION
 
+use Net::CopyParallel::Duration;
+
 use Carp;
 use File::Temp qw/ :POSIX /;
 use Log::Log4perl;
@@ -48,6 +50,14 @@ has tempfile => (
 
 has results => (
     is => 'rw',
+);
+
+has duration => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        return Net::CopyParallel::Duration->new();
+    }
 );
 
 has 'logger'  => (
@@ -163,22 +173,7 @@ sub get_runtime_string {
 
     my $elapsed = $end - $self->starttime;
 
-    my @return_string;
-
-    # calculate seconds, minutes, and hours
-    my $seconds = $elapsed % 60;
-    $elapsed -= $seconds;
-    my $minutes = ($elapsed % 3600) / 60;
-    $elapsed -= ( $minutes * 60 );
-    my $hours = $elapsed / 3600;
-
-    if ( $hours   ) { push @return_string, "${hours}h"   }
-    if ( $minutes ) { push @return_string, "${minutes}m" }
-    if ( $seconds || ! scalar @return_string ) {
-        push @return_string, "${seconds}s";
-    }
-
-    return join( " ", @return_string );
+    return $self->duration->format( $elapsed );
 }
 
 1;
